@@ -1,0 +1,6 @@
+div#game {
+  position: relative;
+}
+canvas {
+  position: absolute;
+}
