@@ -4,3 +4,9 @@ div#game {
 canvas {
   position: absolute;
 }
+canvas#foreground{
+  z-index: 100;
+}
+canvas#background{
+  z-index: -100;
+}

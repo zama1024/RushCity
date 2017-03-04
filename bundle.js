@@ -97,7 +97,7 @@ class Game {
     backgroundImage.src = './assets/images/citybackground.jpg';
     const player = new Player(foregroundCtx, 40, 415);
     const drawImage = (time) => {
-      var framegap=time-lastRepaintTime + 3;
+      var framegap=time-lastRepaintTime;
       lastRepaintTime=time;
       var translateX=velocity*(framegap/900);
       backgroundCtx.clearRect(0,0,1100,650);
@@ -130,15 +130,15 @@ class Player {
     this.y = y;
     this.ctx = ctx;
     this.photoCount = 1;
-    this.timerCount = 0;
+    this.timerCount = 1;
     this.jump = false;
     this.getInitHeight = 0;
-    this.gravity = 3;
+    this.gravity = 6;
     this.gravitySpeed = 0;
     const bikerImage = new Image();
 
     this.image = bikerImage;
-    this.interval = setInterval(this.updateGame.bind(this), 1);
+    this.interval = setInterval(this.updateGame.bind(this), 10);
     this.pressedKey = false;
     window.addEventListener('keydown', function (e) {
       Player.pressedKey = (Player.pressedKey || []);
@@ -150,10 +150,13 @@ class Player {
   }
 
   update(){
-    if (this.photoCount > 5) {
+    let photoCountChar;
+    if (this.photoCount > 2) {
       this.photoCount = 1;
     }
-    this.image.src = `./assets/images/image_part_00${this.photoCount + 4}.png`;
+    photoCountChar = this.photoCount > 9 ? `${this.photoCount}` : `0${this.photoCount}`;
+    this.image.src = `./assets/images/image_part_0${photoCountChar}.png`;
+    this.ctx.clearRect(0,0,1100,650);
     this.ctx.drawImage(this.image, this.x, this.y);
   }
 
@@ -168,8 +171,8 @@ class Player {
     }
       this.y += this.speedY;
       this.x += this.speedX;
-    if (this.y > 430) {
-      this.y = 430;
+    if (this.y > 350) {
+      this.y = 350;
     }
     if (this.x > 900) {
       this.x = 900;
@@ -179,12 +182,11 @@ class Player {
   }
 
   updateGame(){
-    this.ctx.clearRect(0,0,1100,650);
     this.newPos();
     if (Player.pressedKey && Player.pressedKey[37] && this.x > 100) {this.speedX = -2; }
     if (Player.pressedKey && Player.pressedKey[39] && this.x < 950) {this.speedX = 2; }
-    if (Player.pressedKey && Player.pressedKey[38] && this.y > 300) {this.speedY = -2; }
-    if (Player.pressedKey && Player.pressedKey[40] && this.y < 430) {this.speedY = 2; }
+    if (Player.pressedKey && Player.pressedKey[38] && this.y > 220) {this.speedY = -2; }
+    if (Player.pressedKey && Player.pressedKey[40] && this.y < 350) {this.speedY = 2; }
     if (Player.pressedKey && Player.pressedKey[32]) {
       Player.pressedKey = false;
       this.jump = true;
@@ -197,7 +199,7 @@ class Player {
     // if (this.y > 300) {
     // }
     this.timerCount += 1;
-    if (this.timerCount === 15) {
+    if (this.timerCount === 20) {
       this.photoCount += 1;
       this.timerCount = 1;
     }
