@@ -63,34 +63,18 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
+/******/ 	return __webpack_require__(__webpack_require__.s = 6);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const Game = __webpack_require__(1);
-document.addEventListener('DOMContentLoaded', ()=> {
-  const backgroundCanvas = document.getElementById('background');
-  const foregroundCanvas = document.getElementById('foreground');
-  const backgroundCtx = backgroundCanvas.getContext('2d');
-  const foregroundCtx = foregroundCanvas.getContext('2d');
-  const game = new Game(backgroundCtx, foregroundCtx);
-});
-
-
-/***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-const Player = __webpack_require__(3);
-const Obstacle = __webpack_require__(5);
+const Player = __webpack_require__(4);
 class Game {
   constructor(backgroundCtx,foregroundCtx){
     this.background = null;
     this.createBackground(backgroundCtx,foregroundCtx);
-    this.interval = setInterval(() => {this.velocity += 1;}, 100);
     this.velocity = 300;
   }
 
@@ -98,23 +82,21 @@ class Game {
     var velocity=this.velocity;
     const backgroundImage = new Image();
     backgroundImage.src = './assets/images/citybackground.jpg';
-    const player = new Player(foregroundCtx, 40, 415);
-
-    const taxi = new Obstacle(foregroundCtx, 400, 300);
 
     const drawImage = (time) => {
       var framegap=time-lastRepaintTime;
       lastRepaintTime=time;
-      var translateX=this.velocity*(framegap/900);
+      var translateX=(this.velocity += .2)*(framegap/900);
       backgroundCtx.clearRect(0,0,1100,650);
       var pattern=backgroundCtx.createPattern(backgroundImage,"repeat-x");
       backgroundCtx.fillStyle=pattern;
       backgroundCtx.rect(translateX,0,1100,650);
       backgroundCtx.fill();
       backgroundCtx.translate(-translateX,0);
-      requestAnimationFrame(drawImage);
+      window.requestId = requestAnimationFrame(drawImage);
     };
     backgroundImage.addEventListener('load',drawImage,false);
+    const player = new Player(backgroundCtx, foregroundCtx, 40, 415);
     var lastRepaintTime=window.performance.now();
   }
 
@@ -124,16 +106,87 @@ module.exports = Game;
 
 
 /***/ }),
-/* 2 */,
+/* 1 */
+/***/ (function(module, exports) {
+
+class Barrier{
+  constructor(ctx, x, y) {
+    this.height = 150;
+    this.width = 75;
+    this.x = 1100;
+    this.y = [425,480,510][Math.floor(Math.random()*3)];
+    this.ctx = ctx;
+    this.lane1 = this.y > 330;
+    this.lane2 = this.y < 315;
+    this.middlelane =  this.y === 480;
+    const barrierImage = new Image();
+    barrierImage.src = './assets/images/barrier.png';
+    this.image = barrierImage;
+  }
+
+
+}
+module.exports = Barrier;
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports) {
+
+class Car{
+  constructor(ctx) {
+    this.height = 220;
+    this.width = 280;
+    this.x = 1100;
+    this.y = [300,400][Math.floor(Math.random()*2)];
+    this.ctx = ctx;
+    this.lane1 = this.y > 330;
+    this.lane2 = this.y < 315;
+    const carImage = new Image();
+    carImage.src = './assets/images/car.png';
+    this.image = carImage;
+  }
+
+
+}
+module.exports = Car;
+
+
+/***/ }),
 /* 3 */
+/***/ (function(module, exports) {
+
+class Flinstones{
+  constructor(ctx) {
+    this.height = 200;
+    this.width = 350;
+    this.x = 1100;
+    this.y = [300,430,365][Math.floor(Math.random()*3)];
+    this.lane1 = this.y === 430;
+    this.lane2 = this.y === 300;
+    this.middlelane =  this.y === 365;
+    this.ctx = ctx;
+    const flinstonesImage = new Image();
+    flinstonesImage.src = './assets/images/flinstones.png';
+    this.image = flinstonesImage;
+  }
+
+
+}
+module.exports = Flinstones;
+
+
+/***/ }),
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const Taxi = __webpack_require__(6);
-const Barrier = __webpack_require__(7);
-const Flinstones = __webpack_require__(9);
-const Car = __webpack_require__(10);
+const Taxi = __webpack_require__(5);
+const Barrier = __webpack_require__(1);
+const Flinstones = __webpack_require__(3);
+const Car = __webpack_require__(2);
 class Player {
-  constructor(ctx, x, y) {
+  constructor(backgroundCtx, ctx, x, y) {
+    this.backgroundCtx = backgroundCtx;
     this.speedX = 0;
     this.speedY = 0;
     this.x = x;
@@ -146,8 +199,14 @@ class Player {
     this.gravity = 5;
     this.gravitySpeed = 0;
     this.pressedKey = false;
-    this.obs1 = new Barrier(this.ctx);
     this.frameNumber = 0;
+    this.obs1 = null;
+    this.createObstacles = {
+      0: () => new Barrier(this.ctx),
+      1: () => new Taxi(this.ctx),
+      2: () => new Flinstones(this.ctx),
+      3: () => new Car(this.ctx)
+    };
 
     const bikerImage = new Image();
     this.image = bikerImage;
@@ -167,7 +226,11 @@ class Player {
     if (this.photoCount > 2) {
       this.photoCount = 1;
     }
-
+    if (this.frameNumber === 1 || this.everyinterval(125)) {
+      let randomIndex = (Math.floor(Math.random() * 4)).toString();
+      this.obs1 = this.createObstacles[randomIndex]();
+      this.checkCollision = true;
+    }
     this.image.src = `./assets/images/image_part_00${this.photoCount}.png`;
     this.ctx.clearRect(0,0,1100,650);
     if(this.obs1.y > this.y){
@@ -177,6 +240,15 @@ class Player {
     }else{
       this.ctx.drawImage(this.obs1.image, this.obs1.x, this.obs1.y ,this.obs1.width,this.obs1.height);
       this.ctx.drawImage(this.image, this.x, this.y,230,230);
+    }
+    if (this.checkCollision && this.crashWith(this.obs1)) {
+      debugger
+      clearInterval(this.interval);
+      const gameOver = document.getElementById('gameover');
+      const gameOverCtx = gameOver.getContext('2d');
+      this.backgroundCtx.fillStyle="black";
+      this.backgroundCtx.fillRect(0,0,1100,650);
+      this.backgroundCtx.globalAlpha=0.2;
     }
   }
 
@@ -198,6 +270,19 @@ class Player {
     if (this.y > 400) {
       this.y = 400;
     }
+    if (this.y > 330){
+      this.lane1 = true;
+      this.lane2 = false;
+      this.middlelane = false;
+    } else if(this.y < 315){
+      this.lane1 = false;
+      this.lane2 = true;
+      this.middlelane = false;
+    } else if (this.y > 315 && this.y < 330){
+      this.lane1 = false;
+      this.lane2 = false;
+      this.middlelane = true;
+    }
 
     if (this.x > 700) {
       this.x = 700;
@@ -213,21 +298,44 @@ class Player {
     if (Player.pressedKey && Player.pressedKey[39] && this.x < 700) {this.speedX = 2; }
     if (Player.pressedKey && Player.pressedKey[38] && this.y > 270) {this.speedY = -2; }
     if (Player.pressedKey && Player.pressedKey[40] && this.y < 400) {this.speedY = 2; }
-    if (Player.pressedKey && Player.pressedKey[32]) {
+    if (Player.pressedKey && Player.pressedKey[32] && !this.jump) {
       Player.pressedKey = false;
       this.jump = true;
       this.getInitHeight = this.y;
       this.speedY = -200;
       this.speedX = 50;
     }
+    if (this.obs1){
 
-    this.obs1.x -= 6;
+      this.obs1.x -= 10;
+    }
     this.timerCount += 1;
     if (this.timerCount === 20) {
       this.photoCount += 1;
       this.timerCount = 1;
     }
     this.update();
+  }
+
+  crashWith(otherobj) {
+    var playerLeft = this.x;
+    var playerRight = this.x + 180;
+    var playerTop = this.y;
+    var playerBottom = this.y + 230;
+    var obstacleLeft = otherobj.x;
+    var obstacleRight = otherobj.x;
+    var obstacleTop = otherobj.y;
+    var obstacleBottom = otherobj.y + (otherobj.height);
+    var crash = false;
+    if (( (this.lane1 && otherobj.lane1) || (this.lane2 && otherobj.lane2)) && playerRight > obstacleLeft) {
+      crash = true;
+    }else if ((this.middlelane && otherobj.middlelane) && playerRight > obstacleLeft) {
+      crash = true;
+    }else if(playerRight > obstacleLeft) {
+      this.checkCollision = false;
+    }
+
+    return crash;
   }
 
   everyinterval(n) {
@@ -242,17 +350,18 @@ module.exports = Player;
 
 
 /***/ }),
-/* 4 */,
 /* 5 */
 /***/ (function(module, exports) {
 
 class Taxi{
   constructor(ctx, x, y) {
-    this.speedX = 0;
-    this.speedY = 0;
-    this.x = x;
-    this.y = y;
+    this.height = 250;
+    this.width = 400;
+    this.x = 1100;
+    this.y = [270,400][Math.floor(Math.random()*2)];
     this.ctx = ctx;
+    this.lane1 = this.y > 330;
+    this.lane2 = this.y < 315;
     const taxiImage = new Image();
     taxiImage.src = './assets/images/taxi.png';
     this.image = taxiImage;
@@ -265,87 +374,16 @@ module.exports = Taxi;
 
 /***/ }),
 /* 6 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-class Taxi{
-  constructor(ctx, x, y) {
-    this.height = 250;
-    this.width = 400;
-    this.x = 1100;
-    this.y = [270,400][Math.floor(Math.random()*2)];
-    this.ctx = ctx;
-    const taxiImage = new Image();
-    taxiImage.src = './assets/images/taxi.png';
-    this.image = taxiImage;
-  }
-
-
-}
-module.exports = Taxi;
-
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports) {
-
-class Barrier{
-  constructor(ctx, x, y) {
-    this.height = 100;
-    this.width = 75;
-    this.x = 1100;
-    this.y = [425,480,540][Math.floor(Math.random()*3)];
-    this.ctx = ctx;
-    const barrierImage = new Image();
-    barrierImage.src = './assets/images/barrier.png';
-    this.image = barrierImage;
-  }
-
-
-}
-module.exports = Barrier;
-
-
-/***/ }),
-/* 8 */,
-/* 9 */
-/***/ (function(module, exports) {
-
-class Flinstones{
-  constructor(ctx) {
-    this.height = 200;
-    this.width = 350;
-    this.x = 1100;
-    this.y = [300,430][Math.floor(Math.random()*2)];
-    this.ctx = ctx;
-    const flinstonesImage = new Image();
-    flinstonesImage.src = './assets/images/flinstones.png';
-    this.image = flinstonesImage;
-  }
-
-
-}
-module.exports = Flinstones;
-
-
-/***/ }),
-/* 10 */
-/***/ (function(module, exports) {
-
-class Car{
-  constructor(ctx) {
-    this.height = 220;
-    this.width = 280;
-    this.x = 1100;
-    this.y = [300,400][Math.floor(Math.random()*2)];
-    this.ctx = ctx;
-    const carImage = new Image();
-    carImage.src = './assets/images/car.png';
-    this.image = carImage;
-  }
-
-
-}
-module.exports = Car;
+const Game = __webpack_require__(0);
+document.addEventListener('DOMContentLoaded', ()=> {
+  const backgroundCanvas = document.getElementById('background');
+  const foregroundCanvas = document.getElementById('foreground');
+  const backgroundCtx = backgroundCanvas.getContext('2d');
+  const foregroundCtx = foregroundCanvas.getContext('2d');
+  const game = new Game(backgroundCtx, foregroundCtx);
+});
 
 
 /***/ })
