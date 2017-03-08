@@ -249,11 +249,11 @@ class Player {
       this.ctx.fillText(`Current Score: ${this.score}`,600,50);
     }
     if (this.checkCollision && this.crashWith(this.obs1)) {
-      this.ctx.font = "60px Arial";
+      this.ctx.font = "41px Arial";
       this.ctx.fillStyle = '#000000';
       this.ctx.fillRect(0,100,850,100);
       this.ctx.fillStyle = "#FF9900";
-      this.ctx.fillText("Oops! Game over, press Enter Try again!",30,150);
+      this.ctx.fillText("Oops! Game over, press Enter to try again!",30,150);
       window.cancelAnimationFrame(window.requestId);
       window.game = false;
       clearInterval(this.interval);
