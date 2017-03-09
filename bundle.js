@@ -402,7 +402,7 @@ class Player {
     var crash = false;
     if (( (this.lane1 && otherobj.lane1) || (this.lane2 && otherobj.lane2)) && playerRight > obstacleLeft) {
       crash = true;
-    }else if ((otherobj.middlelane) && (playerRight > obstacleLeft) && (playerBottom < obstacleBottom) && (playerBottom > 250)) {
+    }else if ((otherobj.middlelane) && (playerRight > obstacleLeft) && (playerBottom < obstacleBottom) && (playerBottom > 350)) {
       crash = true;
     }else if ((otherobj.middlelane) && (this.middlelane) && (playerRight > obstacleLeft)) {
       crash = true;
