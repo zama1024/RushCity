@@ -188,6 +188,7 @@ const Car = __webpack_require__(2);
 class Player {
   constructor(backgroundCtx, ctx, x, y) {
     this.backgroundCtx = backgroundCtx;
+    this.lives = 3;
     this.speedX = 0;
     this.speedY = 0;
     this.x = x;
@@ -212,6 +213,18 @@ class Player {
 
     const bikerImage = new Image();
     this.image = bikerImage;
+
+    const redheart = new Image();
+    redheart.src = './assets/images/heartred.png';
+    this.redheart = redheart;
+
+    const blackheart = new Image();
+    blackheart.src = './assets/images/heartblack.png';
+    this.blackheart = blackheart;
+
+    const collision = new Image();
+    collision.src = './assets/images/collision.png';
+    this.collision = collision;
 
     this.interval = setInterval(this.updatePlayer.bind(this), 10);
     window.addEventListener('keydown', function (e) {
@@ -239,29 +252,72 @@ class Player {
       this.ctx.drawImage(this.image, this.x, this.y,175,175);
       this.ctx.drawImage(this.obs1.image, this.obs1.x, this.obs1.y ,this.obs1.width,this.obs1.height);
       this.ctx.font = "30px Arial";
-      this.ctx.fillStyle = "#FF9900";
+      this.ctx.fillStyle = "#fffff";
       this.ctx.fillText(`Current Score: ${this.score}`,600,50);
+      this.drawheart();
     }else{
       this.ctx.drawImage(this.obs1.image, this.obs1.x, this.obs1.y ,this.obs1.width,this.obs1.height);
       this.ctx.drawImage(this.image, this.x, this.y,175,175);
       this.ctx.font = "30px Arial";
-      this.ctx.fillStyle = "#FF9900";
+      this.ctx.fillStyle = "#fffff";
       this.ctx.fillText(`Current Score: ${this.score}`,600,50);
+      this.drawheart();
     }
     if (this.checkCollision && this.crashWith(this.obs1)) {
-      this.ctx.font = "41px Arial";
-      this.ctx.fillStyle = '#000000';
-      this.ctx.fillRect(0,100,850,100);
-      this.ctx.fillStyle = "#FF9900";
-      this.ctx.fillText("Oops! Game over, press Enter to try again!",30,150);
-      window.cancelAnimationFrame(window.requestId);
-      window.game = false;
-      clearInterval(this.interval);
-      const gameOver = document.getElementById('gameover');
-      const gameOverCtx = gameOver.getContext('2d');
+      if(this.lives > 0){
+        if (!this.interval2) {
+          this.gotHit();
+          setTimeout(this.stopFlickering.bind(this),1000);
+        }
+      }else{
+        this.ctx.font = "30px Arial";
+        this.ctx.fillStyle = '#000000';
+        this.ctx.fillRect(0,60,850,200);
+        this.ctx.fillStyle = "#FF9900";
+        clearInterval(this.interval);
+        for (var i = 0; i < 299999999; i++) {
 
+        }
+        this.ctx.fillText(`Oops! Game over, Your Score: ${this.score}`,30,120);
+        this.ctx.fillText(`Press Enter to try again`,30,170);
+        window.cancelAnimationFrame(window.requestId);
+        window.game = false;
+        clearInterval(this.interval);
+        const gameOver = document.getElementById('gameover');
+        const gameOverCtx = gameOver.getContext('2d');
+
+      }
     }
   }
+  drawheart(){
+    this.ctx.drawImage(this.image, 10, 20,30,30);
+    let start = 40;
+    for(let i = 0; i < this.lives; i++){
+      this.ctx.drawImage(this.redheart, start, 20,30,30);
+      start += 30;
+    }
+    for(let j = 0; j < 3-this.lives; j++){
+      this.ctx.drawImage(this.blackheart, start, 20,30,30);
+      start += 30;
+    }
+  }
+
+  stopFlickering(){
+    window.clearInterval(this.interval2);
+    this.interval2 = null;
+    this.msgCtx.clearRect(0,0,850,650);
+  }
+
+  gotHit(){
+    const msgCanvas = document.getElementById('gameover');
+    this.msgCtx = msgCanvas.getContext('2d');
+    this.lives -= 1;
+    this.msgCtx.drawImage(this.collision, 300,0, 200,200);
+    this.interval2 = setInterval(() => {
+      this.ctx.clearRect(0,200,850,400);
+    },50);
+  }
+
 
   newPos() {
     if (this.jump) {
@@ -346,7 +402,7 @@ class Player {
     var crash = false;
     if (( (this.lane1 && otherobj.lane1) || (this.lane2 && otherobj.lane2)) && playerRight > obstacleLeft) {
       crash = true;
-    }else if ((otherobj.middlelane) && (playerRight > obstacleLeft) && (playerBottom < obstacleBottom) && (playerBottom > obstacleTop) && (playerTop > obstacleTop)) {
+    }else if ((otherobj.middlelane) && (playerRight > obstacleLeft) && (playerBottom < obstacleBottom) && (playerBottom > 250)) {
       crash = true;
     }else if ((otherobj.middlelane) && (this.middlelane) && (playerRight > obstacleLeft)) {
       crash = true;
