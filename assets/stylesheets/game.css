@@ -19,7 +19,7 @@ img#rushcity{
   font-size: 80px;
 }
 html{
-  background: url("../images/htmlback.png") no-repeat center center fixed;
+  background: black;
   background-size: cover;
   -webkit-background-size: cover;
    -moz-background-size: cover;
@@ -34,9 +34,10 @@ nav{
   font-family: "Comic Sans MS", cursive, sans-serif;
   margin-left: 3%;
   margin-right: 3%;
+  color: grey;
 }
 .contacts a{
-  color: black;
+  color: grey;
   text-decoration: none;
 }
 .contacts img{
