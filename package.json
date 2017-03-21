@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/zama1024/RushCity#readme",
   "dependencies": {
+    "firebase": "^3.7.2",
     "webpack": "^2.2.1"
   }
 }
