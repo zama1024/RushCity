@@ -35,7 +35,7 @@ nav{
   right: 0px;
   top: 70%;
   width: 200px;
-  
+
 }
 #taxi{
   position: absolute;
@@ -96,7 +96,7 @@ canvas {
 }
 #game h3{
   position: absolute;
-  bottom: -50px;
+  bottom: -65px;
   left: 160px;
   font-family: fantasy;
   color: lightslategray;

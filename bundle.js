@@ -83,6 +83,8 @@ class Game {
   }
 
   playAudio() {
+    var audio3 = document.getElementById('audio3');
+    audio3.pause();
     var audio = document.getElementById('audio1');
     if (audio.paused) {
         audio.play();
@@ -302,6 +304,8 @@ class Player {
         clearInterval(this.interval);
         for (var i = 0; i < 299999999; i++) {}
         if(this.score > this.highestScore){
+          var audio3 = document.getElementById('audio3');
+          audio3.play();
           __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__fbase__["b" /* updateScore */])(this.score);
           this.ctx.fillText(`Congrats, New High Score! Your Score: ${this.score}`,30,120);
           this.ctx.fillText(`Press Enter to play again`,30,170);
@@ -309,7 +313,8 @@ class Player {
           window.game = false;
           clearInterval(this.interval);
         }else{
-
+          var audio3 = document.getElementById('audio3');
+          audio3.play();
           this.ctx.fillText(`Oops! Game over, Your Score: ${this.score}`,30,120);
           this.ctx.fillText(`Press Enter to try again`,30,170);
           window.cancelAnimationFrame(window.requestId);
@@ -493,6 +498,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 document.addEventListener('DOMContentLoaded', ()=> {
+  var audio3 = document.getElementById('audio3');
+  audio3.play();
   const backgroundCanvas = document.getElementById('background');
   const foregroundCanvas = document.getElementById('foreground');
   const backgroundCtx = backgroundCanvas.getContext('2d');
