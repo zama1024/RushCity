@@ -78,6 +78,17 @@ class Game {
     this.background = null;
     this.createBackground(backgroundCtx,foregroundCtx);
     this.velocity = 300;
+    this.playAudio();
+
+  }
+
+  playAudio() {
+    var audio = document.getElementById('audio1');
+    if (audio.paused) {
+        audio.play();
+    }else{
+        audio.currentTime = 0;
+    }
   }
 
   createBackground(backgroundCtx, foregroundCtx) {
@@ -215,6 +226,9 @@ class Player {
       2: () => new Flinstones(this.ctx),
       3: () => new Car(this.ctx)
     };
+    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__fbase__["a" /* callScore */])().then((res) => {
+       this.highestScore = res;
+    });
 
     const bikerImage = new Image();
     this.image = bikerImage;
@@ -258,14 +272,18 @@ class Player {
       this.ctx.drawImage(this.obs1.image, this.obs1.x, this.obs1.y ,this.obs1.width,this.obs1.height);
       this.ctx.font = "30px Arial";
       this.ctx.fillStyle = "#fffff";
-      this.ctx.fillText(`Current Score: ${this.score}`,600,50);
+      this.ctx.fillText(`Current Score: ${this.score}`,300,50);
+      this.ctx.fillStyle = "red";
+      this.ctx.fillText(`High Score: ${this.highestScore}`,630,50);
       this.drawheart();
     }else{
       this.ctx.drawImage(this.obs1.image, this.obs1.x, this.obs1.y ,this.obs1.width,this.obs1.height);
       this.ctx.drawImage(this.image, this.x, this.y,175,175);
       this.ctx.font = "30px Arial";
       this.ctx.fillStyle = "#fffff";
-      this.ctx.fillText(`Current Score: ${this.score}`,600,50);
+      this.ctx.fillText(`Current Score: ${this.score}`,300,50);
+      this.ctx.fillStyle = "red";
+      this.ctx.fillText(`High Score: ${this.highestScore}`,630,50);
       this.drawheart();
     }
     if (this.checkCollision && this.crashWith(this.obs1)) {
@@ -275,19 +293,29 @@ class Player {
           setTimeout(this.stopFlickering.bind(this),1000);
         }
       }else{
+        var audio = document.getElementById('audio1');
+        audio.pause();
         this.ctx.font = "30px Arial";
         this.ctx.fillStyle = '#000000';
         this.ctx.fillRect(0,60,850,200);
-        this.ctx.fillStyle = "#FF9900";
+        this.ctx.fillStyle = "yellow";
         clearInterval(this.interval);
         for (var i = 0; i < 299999999; i++) {}
-        this.ctx.fillText(`Oops! Game over, Your Score: ${this.score}`,30,120);
-        this.ctx.fillText(`Press Enter to try again`,30,170);
-        window.cancelAnimationFrame(window.requestId);
-        window.game = false;
-        clearInterval(this.interval);
-        const gameOver = document.getElementById('gameover');
-        const gameOverCtx = gameOver.getContext('2d');
+        if(this.score > this.highestScore){
+          __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__fbase__["b" /* updateScore */])(this.score);
+          this.ctx.fillText(`Congrats, New High Score! Your Score: ${this.score}`,30,120);
+          this.ctx.fillText(`Press Enter to play again`,30,170);
+          window.cancelAnimationFrame(window.requestId);
+          window.game = false;
+          clearInterval(this.interval);
+        }else{
+
+          this.ctx.fillText(`Oops! Game over, Your Score: ${this.score}`,30,120);
+          this.ctx.fillText(`Press Enter to try again`,30,170);
+          window.cancelAnimationFrame(window.requestId);
+          window.game = false;
+          clearInterval(this.interval);
+        }
 
       }
     }
@@ -312,10 +340,12 @@ class Player {
   }
 
   gotHit(){
+    var audio = document.getElementById('audio2');
+    audio.play();
     const msgCanvas = document.getElementById('gameover');
     this.msgCtx = msgCanvas.getContext('2d');
     this.lives -= 1;
-    this.msgCtx.drawImage(this.collision, 300,0, 200,200);
+    this.msgCtx.drawImage(this.collision, 300,40, 200,200);
     this.interval2 = setInterval(() => {
       this.ctx.clearRect(0,200,850,400);
     },50);
@@ -470,12 +500,11 @@ document.addEventListener('DOMContentLoaded', ()=> {
   __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__fbase__["a" /* callScore */])().then((res) => {
      let highestScore = res;
      backgroundCtx.fillStyle = "yellow";
-     backgroundCtx.fillRect(260,250,310,45);
-    backgroundCtx.font = "30px Verdana";
+     backgroundCtx.fillRect(270,250,300,45);
+     backgroundCtx.font = "30px Verdana";
      backgroundCtx.fillStyle = "black";
-     backgroundCtx.fillText(`Highest Score: ${highestScore}`,280,280);
+     backgroundCtx.fillText(`High Score: ${highestScore}`,305,282);
   });
-  debugger
   const backgroundImage = new Image();
   window.game = false;
   backgroundImage.src = './assets/images/entrybackground.jpg';
@@ -608,7 +637,7 @@ const database = __WEBPACK_IMPORTED_MODULE_0_firebase__["database"]();
 const updateScore = (score) => {
   __WEBPACK_IMPORTED_MODULE_0_firebase__["database"]().ref().set({ highScore: score});
 };
-/* unused harmony export updateScore */
+/* harmony export (immutable) */ __webpack_exports__["b"] = updateScore;
 
 
 const callScore = () => {
