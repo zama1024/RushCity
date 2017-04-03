@@ -632,6 +632,16 @@ document.addEventListener('DOMContentLoaded', ()=> {
       window.game = new __WEBPACK_IMPORTED_MODULE_1__game_js__["a" /* default */](backgroundCtx, foregroundCtx);
     }
   },false);
+  var soundControl = document.getElementById("sound");
+  soundControl.addEventListener("click", () => {
+    if(audio3.muted){
+      audio3.muted = false;
+      soundControl.src = "./assets/images/mute.png";
+    }else{
+      audio3.muted = true;
+      soundControl.src = "./assets/images/sound.png";
+    }
+  });
 });
 
 
