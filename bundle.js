@@ -633,11 +633,17 @@ document.addEventListener('DOMContentLoaded', ()=> {
     }
   },false);
   var soundControl = document.getElementById("sound");
+  var audio1 = document.getElementById('audio1');
+  var audio2 = document.getElementById('audio2');
   soundControl.addEventListener("click", () => {
     if(audio3.muted){
+      audio1.muted = false;
+      audio2.muted = false;
       audio3.muted = false;
       soundControl.src = "./assets/images/mute.png";
     }else{
+      audio1.muted = true;
+      audio2.muted = true;
       audio3.muted = true;
       soundControl.src = "./assets/images/sound.png";
     }
