@@ -44,8 +44,3 @@ The background canvas takes care of the background city and road effect, and the
 The biker can move around two lanes and also jump when needed. This optical illusion was created by setting a gravity variable and giving the biker a position and speed.
 
 ![gamegif](./assets/images/farshid-rush-city.gif)
-
-
-## Future Features
-1. Create high score feature using google firebase.
-2. Add sound to the game.
