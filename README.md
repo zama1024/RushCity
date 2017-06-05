@@ -9,7 +9,7 @@ Rush City is a road biking game inspired by Temple Run and Subway Surfers. The g
 You are a city biker trying to avoid incoming traffic that's coming your way. Press the arrow keys to move around lanes and press the space key to jump.
 
 ## Technologies
-- JavaScript
+- Javascript
 - HTML5 Canvas
 
 ## Features and Implementation
