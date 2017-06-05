@@ -10,7 +10,7 @@ You are a city biker trying to avoid incoming traffic that's coming your way. Pr
 
 ## Technologies
 - JavaScript
-- HTML Canvas
+- HTML5 Canvas
 
 ## Features and Implementation
 All features in this game were implemented using native JavaScript DOM manipulation and, HTML5 canvas. No additional libraries were used.
