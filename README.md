@@ -16,7 +16,7 @@ You are a city biker trying to avoid incoming traffic that's coming your way. Pr
 All features in this game were implemented using native JavaScript DOM manipulation and, HTML5 canvas. No additional libraries were used.
 
 ### Parallax Background
-The Parallax background effect was created by having multiple canvas layers.  
+The Parallax background effect was created by having multiple canvas layer.  
 
 ```JavaScript
   document.addEventListener('DOMContentLoaded', ()=> {
